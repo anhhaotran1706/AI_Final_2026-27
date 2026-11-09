@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="980" viewBox="0 0 1440 980" role="img" aria-labelledby="title desc">
+  <title id="title">Pipeline luồng chạy các bài tập ex1, ex2 và ex3</title>
+  <desc id="desc">Sơ đồ thể hiện dữ liệu đầu vào, module xử lý, thuật toán và kết quả của ba bài tập AI.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#526277"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #182433; }
+      .title { font-size: 30px; font-weight: 700; }
+      .subtitle { font-size: 15px; fill: #526277; }
+      .lane-title { font-size: 20px; font-weight: 700; }
+      .lane-subtitle { font-size: 13px; fill: #526277; }
+      .node-title { font-size: 14px; font-weight: 700; }
+      .node-copy { font-size: 12px; fill: #435267; }
+      .small { font-size: 11px; fill: #526277; }
+      .arrow { fill: none; stroke: #526277; stroke-width: 2; marker-end: url(#arrow); }
+      .branch { fill: none; stroke: #8794a5; stroke-width: 1.7; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1440" height="980" fill="#f4f7fa"/>
+  <text x="52" y="54" class="title">Luồng chạy các bài tập AI</text>
+  <text x="52" y="82" class="subtitle">Đọc từ trái sang phải: dữ liệu đầu vào → mô hình / thuật toán → kết quả hiển thị hoặc file.</text>
+
+  <!-- EX1 -->
+  <rect x="40" y="112" width="1360" height="250" rx="14" fill="#ffffff" stroke="#c8d3df"/>
+  <rect x="40" y="112" width="9" height="250" rx="4" fill="#277da1"/>
+  <text x="66" y="148" class="lane-title">EX1 · N-Queens</text>
+  <text x="66" y="169" class="lane-subtitle">Hai cách giải độc lập, cùng tìm cấu hình N quân hậu không tấn công nhau.</text>
+
+  <rect x="72" y="193" width="210" height="60" rx="9" fill="#e6f4f8" stroke="#84bfd0"/>
+  <text x="90" y="218" class="node-title">Kích thước bàn cờ N</text>
+  <text x="90" y="238" class="node-copy">đầu vào chung</text>
+  <path d="M282 223 H330 V209 H365" class="arrow"/>
+  <path d="M330 223 V300 H365" class="arrow"/>
+
+  <rect x="370" y="179" width="230" height="62" rx="9" fill="#e6f4f8" stroke="#84bfd0"/>
+  <text x="388" y="204" class="node-title">nqueens_cnf.py</text>
+  <text x="388" y="224" class="node-copy">mã hóa ràng buộc thành CNF</text>
+  <path d="M600 210 H660" class="arrow"/>
+  <rect x="665" y="179" width="240" height="62" rx="9" fill="#e6f4f8" stroke="#84bfd0"/>
+  <text x="683" y="204" class="node-title">nqueens_sat.py + Glucose3</text>
+  <text x="683" y="224" class="node-copy">tìm mô hình SAT</text>
+  <path d="M905 210 H965" class="arrow"/>
+  <rect x="970" y="179" width="190" height="62" rx="9" fill="#e6f4f8" stroke="#84bfd0"/>
+  <text x="988" y="204" class="node-title">Kiểm tra lời giải</text>
+  <text x="988" y="224" class="node-copy">đủ N hậu, không xung đột</text>
+  <path d="M1160 210 H1210" class="arrow"/>
+  <rect x="1215" y="179" width="155" height="62" rx="9" fill="#d9f0e5" stroke="#75b79a"/>
+  <text x="1233" y="204" class="node-title">CSV / biểu đồ</text>
+  <text x="1233" y="224" class="node-copy">thống kê SAT</text>
+
+  <rect x="370" y="269" width="230" height="62" rx="9" fill="#fff2dc" stroke="#e1bd79"/>
+  <text x="388" y="294" class="node-title">nqueens_minconflicts.py</text>
+  <text x="388" y="314" class="node-copy">khởi tạo một hậu mỗi cột</text>
+  <path d="M600 300 H660" class="arrow"/>
+  <rect x="665" y="269" width="240" height="62" rx="9" fill="#fff2dc" stroke="#e1bd79"/>
+  <text x="683" y="294" class="node-title">Chọn cột + hàng ít xung đột</text>
+  <text x="683" y="314" class="node-copy">random / max-conflict / tabu</text>
+  <path d="M905 300 H965" class="arrow"/>
+  <rect x="970" y="269" width="190" height="62" rx="9" fill="#fff2dc" stroke="#e1bd79"/>
+  <text x="988" y="294" class="node-title">Lặp đến khi giải được</text>
+  <text x="988" y="314" class="node-copy">hoặc hết giới hạn bước</text>
+  <path d="M1160 300 H1210" class="arrow"/>
+  <rect x="1215" y="269" width="155" height="62" rx="9" fill="#d9f0e5" stroke="#75b79a"/>
+  <text x="1233" y="294" class="node-title">CSV</text>
+  <text x="1233" y="314" class="node-copy">tỷ lệ / bước / thời gian</text>
+
+  <!-- EX2 -->
+  <rect x="40" y="382" width="1360" height="250" rx="14" fill="#ffffff" stroke="#c8d3df"/>
+  <rect x="40" y="382" width="9" height="250" rx="4" fill="#d17a36"/>
+  <text x="66" y="418" class="lane-title">EX2 · Tank Battle</text>
+  <text x="66" y="439" class="lane-subtitle">Game hai người chơi: agent chọn hành động, arena áp dụng luật và theo dõi ván đấu.</text>
+
+  <rect x="72" y="477" width="210" height="66" rx="9" fill="#fff0e4" stroke="#dfab7f"/>
+  <text x="90" y="503" class="node-title">tank_game.py</text>
+  <text x="90" y="523" class="node-copy">trạng thái, luật, hành động</text>
+  <path d="M282 510 H340" class="arrow"/>
+  <rect x="345" y="477" width="240" height="66" rx="9" fill="#fff0e4" stroke="#dfab7f"/>
+  <text x="363" y="503" class="node-title">Agent chọn nước đi</text>
+  <text x="363" y="523" class="node-copy">tank_ai hoặc plugin agents/</text>
+  <path d="M585 510 H645" class="arrow"/>
+  <rect x="650" y="477" width="250" height="66" rx="9" fill="#fff0e4" stroke="#dfab7f"/>
+  <text x="668" y="503" class="node-title">arena.py · GameController</text>
+  <text x="668" y="523" class="node-copy">giới hạn thời gian, lỗi, nước đi</text>
+  <path d="M900 510 H960" class="arrow"/>
+  <rect x="965" y="477" width="175" height="66" rx="9" fill="#fff0e4" stroke="#dfab7f"/>
+  <text x="983" y="503" class="node-title">GameState.apply</text>
+  <text x="983" y="523" class="node-copy">cập nhật lượt / đạn / HP</text>
+  <path d="M1140 510 H1185 V560 H1140" class="branch"/>
+  <path d="M1052 543 V576 H645 V543" class="branch"/>
+  <text x="849" y="572" class="small">lặp cho đến khi thắng, hòa hoặc hết chu kỳ</text>
+  <path d="M1140 510 H1190" class="arrow"/>
+  <rect x="1195" y="477" width="175" height="66" rx="9" fill="#d9f0e5" stroke="#75b79a"/>
+  <text x="1213" y="503" class="node-title">Kết quả ván đấu</text>
+  <text x="1213" y="523" class="node-copy">thắng / thua / hòa</text>
+
+  <rect x="345" y="578" width="555" height="38" rx="8" fill="#f2f5f8" stroke="#c8d3df"/>
+  <text x="365" y="602" class="node-copy">tank_experiements.py: chi phí tìm kiếm, độ sâu theo thời gian, đấu vòng tròn → CSV</text>
+
+  <!-- EX3 -->
+  <rect x="40" y="652" width="1360" height="282" rx="14" fill="#ffffff" stroke="#c8d3df"/>
+  <rect x="40" y="652" width="9" height="282" rx="4" fill="#50845d"/>
+  <text x="66" y="688" class="lane-title">EX3 · Kakuro CSP</text>
+  <text x="66" y="709" class="lane-subtitle">Đọc puzzle → mô hình hóa biến/miền/ràng buộc → giải, lưu trace để phát lại trên GUI.</text>
+
+  <rect x="72" y="755" width="190" height="66" rx="9" fill="#eaf4e9" stroke="#9ab99a"/>
+  <text x="90" y="781" class="node-title">Puzzle .txt</text>
+  <text x="90" y="801" class="node-copy">hoặc generator tạo puzzle</text>
+  <path d="M262 788 H310" class="arrow"/>
+  <rect x="315" y="755" width="220" height="66" rx="9" fill="#eaf4e9" stroke="#9ab99a"/>
+  <text x="333" y="781" class="node-title">kakuro_csp.py</text>
+  <text x="333" y="801" class="node-copy">parse lưới, runs, domains</text>
+  <path d="M535 788 H585" class="arrow"/>
+  <rect x="590" y="755" width="245" height="66" rx="9" fill="#eaf4e9" stroke="#9ab99a"/>
+  <text x="608" y="781" class="node-title">kakuro_solver.py</text>
+  <text x="608" y="801" class="node-copy">propagation + backtracking</text>
+  <path d="M835 788 H885" class="arrow"/>
+  <rect x="890" y="755" width="210" height="66" rx="9" fill="#eaf4e9" stroke="#9ab99a"/>
+  <text x="908" y="781" class="node-title">Observer events</text>
+  <text x="908" y="801" class="node-copy">assign / revise / conflict</text>
+  <path d="M1100 788 H1150" class="arrow"/>
+  <rect x="1155" y="755" width="215" height="66" rx="9" fill="#d9f0e5" stroke="#75b79a"/>
+  <text x="1173" y="781" class="node-title">kakuro_trace.py</text>
+  <text x="1173" y="801" class="node-copy">TraceStep + snapshot miền</text>
+  <path d="M1262 821 V862 H1080" class="arrow"/>
+  <rect x="835" y="839" width="245" height="60" rx="9" fill="#e8eefb" stroke="#9aadd5"/>
+  <text x="853" y="864" class="node-title">kakuro_gui.py</text>
+  <text x="853" y="884" class="node-copy">phát lại bước giải và tương tác</text>
+  <path d="M712 821 V862 H790" class="branch"/>
+  <rect x="590" y="839" width="195" height="60" rx="9" fill="#f2f5f8" stroke="#c8d3df"/>
+  <text x="608" y="864" class="node-title">kakuro_experiments.py</text>
+  <text x="608" y="884" class="node-copy">kiểm thử / ablation / scaling</text>
+  <path d="M590 869 H535" class="arrow"/>
+  <rect x="315" y="839" width="215" height="60" rx="9" fill="#d9f0e5" stroke="#75b79a"/>
+  <text x="333" y="864" class="node-title">CSV kết quả</text>
+  <text x="333" y="884" class="node-copy">ablation / stability / scaling</text>
+
+  <text x="52" y="961" class="small">Ghi chú: mũi tên vòng lặp biểu thị quá trình tìm kiếm hoặc cập nhật trạng thái cho đến khi đạt điều kiện dừng.</text>
+</svg>

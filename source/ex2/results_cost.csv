@@ -1,0 +1,21 @@
+depth,config,avg_nodes,avg_time_s,avg_cutoffs
+2,Minimax,38.8,0.00023,0
+2,Alpha-Beta,16.2,0.00016,4.7
+2,Heuristic Minimax,38.8,0.00098,0
+2,Heuristic Minimax + Alpha-Beta,21.1,0.00051,3.7
+3,Minimax,226.5,0.00134,0
+3,Alpha-Beta,53.3,0.00044,9.5
+3,Heuristic Minimax,226.5,0.00628,0
+3,Heuristic Minimax + Alpha-Beta,70.3,0.00207,12.7
+4,Minimax,1281.2,0.01462,0
+4,Alpha-Beta,117.2,0.00204,40.8
+4,Heuristic Minimax,1281.2,0.0521,0
+4,Heuristic Minimax + Alpha-Beta,187.3,0.01216,47.4
+5,Minimax,7249.5,0.04139,0
+5,Alpha-Beta,331.1,0.00278,72.4
+5,Heuristic Minimax,7249.5,0.16406,0
+5,Heuristic Minimax + Alpha-Beta,554.8,0.01166,117.9
+6,Minimax,40686.8,0.23032,0
+6,Alpha-Beta,694.9,0.00683,253.7
+6,Heuristic Minimax,40686.8,0.91686,0
+6,Heuristic Minimax + Alpha-Beta,1394.8,0.02948,373

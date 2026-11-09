@@ -1,0 +1,7 @@
+configuration,solved,hit_node_limit,nodes,backtracks,revisions,median_time_s
+1. Backtracking (static order),True,False,1036,988,0,0.03081
+2. + domain pruning by combinations,True,False,627,579,0,0.0115
+3. + MRV + Degree,True,False,216,168,0,0.07463
+4. Propagation (static order),True,False,1,0,107,0.0026
+5. Propagation + MRV + Degree,True,False,3,0,124,0.00326
+6. Propagation + MRV + Degree + LCV,True,False,2,0,102,0.00268

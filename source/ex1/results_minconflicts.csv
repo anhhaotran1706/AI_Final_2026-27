@@ -1,0 +1,19 @@
+N,selector,success_rate,avg_steps,avg_time_s
+8,standard (random),0.8666666666666667,118.6,0.00072
+8,max-conflict,0.9666666666666667,69.6,0.00049
+8,max-conflict + tabu,0.9666666666666667,53.5,0.00035
+16,standard (random),1.0,81.5,0.00066
+16,max-conflict,1.0,61.5,0.00066
+16,max-conflict + tabu,1.0,42.6,0.0005
+32,standard (random),1.0,77.7,0.00119
+32,max-conflict,1.0,66.9,0.00118
+32,max-conflict + tabu,1.0,54.5,0.001
+64,standard (random),1.0,116,0.00269
+64,max-conflict,1.0,93.1,0.00266
+64,max-conflict + tabu,1.0,69.8,0.00216
+128,standard (random),1.0,156.9,0.00689
+128,max-conflict,1.0,130.6,0.00742
+128,max-conflict + tabu,1.0,119.7,0.00716
+256,standard (random),1.0,236.3,0.0208
+256,max-conflict,1.0,197.4,0.02332
+256,max-conflict + tabu,1.0,178.8,0.02276

@@ -1,0 +1,13 @@
+time_budget_s,config,avg_depth_reached
+0.01,Minimax,3.83
+0.01,Alpha-Beta,5.83
+0.01,Heuristic Minimax,3
+0.01,Heuristic Minimax + Alpha-Beta,4
+0.05,Minimax,4.83
+0.05,Alpha-Beta,7.17
+0.05,Heuristic Minimax,4
+0.05,Heuristic Minimax + Alpha-Beta,5.67
+0.2,Minimax,5.17
+0.2,Alpha-Beta,9
+0.2,Heuristic Minimax,4.5
+0.2,Heuristic Minimax + Alpha-Beta,7

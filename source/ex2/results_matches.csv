@@ -1,0 +1,13 @@
+MAX_agent,MIN_agent,MAX_wins,MIN_wins,draws,avg_cycles
+Minimax,Alpha-Beta,1,0,2,21.7
+Minimax,Heuristic Minimax,0,2,1,74.7
+Minimax,Heuristic Minimax + Alpha-Beta,0,2,1,74.7
+Alpha-Beta,Minimax,1,0,2,21.7
+Alpha-Beta,Heuristic Minimax,0,2,1,74.7
+Alpha-Beta,Heuristic Minimax + Alpha-Beta,0,2,1,74.7
+Heuristic Minimax,Minimax,3,0,0,37
+Heuristic Minimax,Alpha-Beta,3,0,0,37
+Heuristic Minimax,Heuristic Minimax + Alpha-Beta,0,2,1,34
+Heuristic Minimax + Alpha-Beta,Minimax,3,0,0,37
+Heuristic Minimax + Alpha-Beta,Alpha-Beta,3,0,0,37
+Heuristic Minimax + Alpha-Beta,Heuristic Minimax,0,2,1,34

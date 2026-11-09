@@ -37,11 +37,210 @@ source/
 
 Mũi tên chỉ luồng dữ liệu chính; hai nhánh trong `ex1` là các thuật toán giải độc lập.
 
+## Đối chiếu yêu cầu của đề bài với dự án
+
+Mục này liệt kê từng yêu cầu trong đề (Final Project, môn Introduction to AI 503043) và chỉ ra phần tương ứng trong dự án: file, hàm hoặc lớp thực hiện, kết quả sinh ra, và phần nào phải viết trong báo cáo (Task 4). Ký hiệu **YC** là "yêu cầu" (Requirement) của đề. Điểm tối đa theo đề: Task 1 gồm 1.0 + 1.0 + 1.0, Task 2 gồm 1.0 + 1.5 + 0.5, Task 3 gồm 1.0 + 1.0 + 1.0.
+
+### Bảng tổng hợp
+
+| Yêu cầu | Điểm | Nội dung đề yêu cầu | File / hàm chính | Trạng thái |
+|---|---|---|---|---|
+| ex1 – YC1 | 1.0 | Mô hình logic mệnh đề, thuật toán khám phá ràng buộc, chuyển sang CNF | `ex1/nqueens_cnf.py` | Có code. Phần thảo luận viết trong báo cáo |
+| ex1 – YC2 | 1.0 | Giải bằng Glucose3, thí nghiệm N tăng dần (N ≥ 4), báo số mệnh đề và thời gian | `ex1/nqueens_sat.py` | Có code. Cần chạy trên máy đánh giá để có `results_sat.csv` (chưa có trong cấu trúc liệt kê ở trên) |
+| ex1 – YC3 | 1.0 | Min-Conflicts, đề xuất heuristic chọn biến, so sánh với bản chuẩn | `ex1/nqueens_minconflicts.py`, `results_minconflicts.csv` | Có code và kết quả |
+| ex2 – YC1 | 1.0 | Mô hình Zero-Sum Game: trạng thái, người chơi, hành động, chuyển trạng thái, terminal, utility; cách áp dụng tìm kiếm đối kháng | `ex2/tank_game.py` | Có code. Phần thảo luận viết trong báo cáo |
+| ex2 – YC2 | 1.5 | Thuật toán điều khiển xe tăng, tối ưu thời gian thực, thí nghiệm 4 cấu hình | `ex2/tank_ai.py`, `ex2/tank_experiements.py`, `results_*.csv` | Có code và kết quả |
+| ex2 – YC3 | 0.5 | Giao diện PyGame, cơ chế nạp thuật toán của nhóm khác, cho các thuật toán đấu nhau | `ex2/tank_gui.py`, `ex2/agent_loader.py`, `ex2/arena.py`, `ex2/agents/` | Cơ chế nạp và đấu đã có. **`tank_gui.py` đang trống nên phần giao diện chưa đạt**, xem ghi chú ở YC3 |
+| ex3 – YC1 | 1.0 | Mô hình CSP: biến, miền, ràng buộc; mô tả và biện minh thuật toán | `ex3/kakuro_csp.py` (mô hình), `ex3/kakuro_solver.py` (kỹ thuật) | Có code. Phần mô tả và biện minh viết trong báo cáo |
+| ex3 – YC2 | 1.0 | Solver giải được bài; chứng minh tính đúng, ổn định, hiệu quả trên bảng phức tạp | `ex3/kakuro_solver.py`, `ex3/kakuro_experiments.py`, `puzzles/complex_9x9.txt` | Có code và kết quả |
+| ex3 – YC3 | 1.0 | Giao diện thể hiện miền biến, quá trình lan truyền ràng buộc, quá trình Backtracking | `ex3/kakuro_trace.py`, `ex3/kakuro_gui.py` | Có code. Cần chạy với PyGame thật để chụp hình cho báo cáo |
+
+### ex1 – N-Queens (Local Search và Propositional Logic)
+
+**Mô tả đề:** bàn cờ N × N, đặt N quân hậu không có cặp nào tấn công nhau; mỗi ô là một biến logic, True nghĩa là ô có hậu, False nghĩa là ô trống.
+Ánh xạ trong dự án: `Board.var(r, c)` đổi ô (r, c) thành biến mệnh đề `r·N + c + 1`; `Board.num_vars` bằng N².
+
+#### ex1 – YC1 (1.0 điểm): mô hình hóa bằng logic mệnh đề
+
+**Đề yêu cầu:**
+1. Mô hình bài toán thành bài toán logic mệnh đề và giới thiệu các thành phần liên quan.
+2. Thảo luận thuật toán khám phá các ràng buộc chi phối việc đặt hậu.
+3. Giải thích quy trình chuyển các ràng buộc sang mệnh đề CNF.
+
+**Trong dự án:**
+- Thành phần của mô hình (biến, ánh xạ ô thành biến): `Board` (`var`, `square`, `squares`, `num_vars`).
+- Khám phá ràng buộc: `ConstraintGenerator.attacks` (hai ô tấn công nhau khi cùng hàng, cùng cột hoặc cùng đường chéo), `attacking_pairs_naive` (duyệt mọi cặp ô) và `attacking_pairs_grouped` (gom ô theo hàng, cột, đường chéo rồi ghép cặp trong từng nhóm).
+- Chuyển sang CNF: `at_least_one_per_row` (mệnh đề "mỗi hàng có ít nhất một hậu") và `at_most_one_clauses` (mỗi cặp ô tấn công nhau cho mệnh đề `¬x(a) ∨ ¬x(b)`), gộp bởi `generate`; công thức đã ở dạng CNF nên lưu trong `CNFFormula` và xuất được bằng `to_dimacs`.
+- Kiểm chứng: `expected_clause_count` cho công thức số mệnh đề `N + 2N·C(N,2) + 4·C(N,3) + 2·C(N,2)` để đối chiếu với số mệnh đề thật.
+- **Trong báo cáo:** phần "thảo luận" và "giải thích quy trình" cần viết thành văn bản (công thức, ví dụ bàn cờ 4×4, khử kéo theo `x(a) → ¬x(b) ≡ ¬x(a) ∨ ¬x(b)`).
+
+#### ex1 – YC2 (1.0 điểm): Glucose3 và thí nghiệm khi N tăng
+
+**Đề yêu cầu:**
+1. Dùng solver Glucose3 của thư viện PySAT để tìm lời giải.
+2. Thí nghiệm với N tăng dần, N ≥ 4.
+3. Với mỗi N, báo cáo tổng số mệnh đề CNF và thời gian chạy của solver.
+
+**Trong dự án:**
+- `SATQueensSolver` (`build`, `solve`): tạo CNF, gọi Glucose3, đo riêng thời gian sinh CNF và thời gian giải (đề chỉ yêu cầu thời gian của solver, nên cột `solve_time_s` là số liệu cần báo cáo).
+- `SATQueensSolver.is_valid`: kiểm tra độc lập lời giải.
+- `ExperimentRunner` (`run`, `save_csv`, `plot`): chạy nhiều giá trị N, ghi số biến, số mệnh đề, thời gian, tính hợp lệ.
+- Đầu ra: `results_sat.csv` và `results_sat.png` (sinh ra khi chạy `nqueens_sat.py`).
+- **Lưu ý:** số liệu thời gian phải đo trên máy theo cấu hình đánh giá của đề (macOS 13.7.8, Intel Core i5). Cần chạy lại và lưu `results_sat.csv` vào thư mục `ex1`.
+
+#### ex1 – YC3 (1.0 điểm): Min-Conflicts và heuristic chọn biến
+
+**Đề yêu cầu:**
+1. Giải bằng thuật toán Min-Conflicts (Lecture 08).
+2. Đề xuất một heuristic chọn biến.
+3. Thí nghiệm đánh giá hiệu quả của heuristic bằng cách so sánh với Min-Conflicts chuẩn.
+
+**Trong dự án:**
+- Min-Conflicts: `MinConflictsSolver` (`random_initial`, `best_value`, `solve`) cùng `QueensState` (bộ đếm hàng và đường chéo để tính xung đột nhanh).
+- Bản chuẩn (baseline): `RandomSelector`, chọn ngẫu nhiên một cột đang xung đột.
+- Heuristic đề xuất: `MaxConflictSelector` (cột nhiều xung đột nhất) và `MaxConflictTabuSelector` (thêm tabu để tránh lặp vòng).
+- Thí nghiệm so sánh: `Experiment` (`run`, `save_csv`), tính tỷ lệ thành công, số bước trung bình, thời gian trung bình với cùng trạng thái đầu cho cả ba bộ chọn.
+- Kết quả: `results_minconflicts.csv` (N = 8, 16, 32, 64, 128, 256).
+- **Trong báo cáo:** nêu rõ heuristic đề xuất, bảng so sánh và nhận xét (heuristic giảm số bước nhưng thời gian gần như không đổi vì mỗi bước tốn thêm O(N) để chọn cột lớn nhất).
+
+**Lưu ý chung của Task 1 (phần Notice trong đề):** code phải theo nguyên tắc OOP (đã dùng các lớp `Board`, `CNFFormula`, `ConstraintGenerator`, `SATQueensSolver`, `QueensState`, `VariableSelector`, `MinConflictsSolver`); số liệu đánh giá trên macOS 13.7.8, Intel Core i5.
+
+### ex2 – Tank Battle (Adversarial Search)
+
+**Mô tả đề:** game theo lượt, xe tăng đi một ô mỗi lượt (UP, DOWN, LEFT, RIGHT), đạn bay 3 ô mỗi chu kỳ và kiểm tra va chạm sau từng ô, đạn dừng ngay khi trúng; HP và sát thương: Tank 6 HP, Base 9 HP, Wall 3 HP, mỗi lần trúng 1 sát thương; 6 hành động `MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, FIRE, STAY`; game kết thúc khi căn cứ hoặc xe tăng bị phá.
+Ánh xạ trong dự án: hằng số `TANK_HP`, `BASE_HP`, `WALL_HP`, `BULLET_SPEED` và `MAX_CYCLES` trong `tank_game.py`; enum `Action` (6 hành động); `GameState._move_bullets` (đạn bay từng ô, va chạm, sát thương); `GameState.is_terminal` (kết thúc).
+
+#### ex2 – YC1 (1.0 điểm): mô hình Zero-Sum Game
+
+**Đề yêu cầu:**
+1. Mô hình bài toán thành trò chơi tổng bằng không.
+2. Giới thiệu các thành phần: trạng thái game, người chơi, hành động, hàm chuyển trạng thái, trạng thái kết thúc, hàm lợi ích (utility).
+3. Thảo luận cách áp dụng Minimax Search, Alpha-Beta Pruning và Heuristic Minimax Search để điều khiển xe tăng.
+
+**Trong dự án (`ex2/tank_game.py`):**
+
+| Thành phần theo đề | Nằm ở đâu |
+|---|---|
+| Trạng thái game | `GameState` (tường và HP, xe tăng `Tank`, căn cứ `Base`, đạn `Bullet`, lượt chơi, số chu kỳ); `GameConfig` (bản đồ); `GameState.key` (dạng băm) |
+| Người chơi | `MAX_PLAYER` (xe tăng của ta) và `MIN_PLAYER` (đối thủ); `utility` tính từ góc nhìn MAX nên U_MIN = −U_MAX |
+| Hành động | `Action`; `GameState.legal_actions` (luôn có `STAY`, chỉ cho `FIRE` khi chưa có đạn bay) |
+| Hàm chuyển trạng thái | `GameState.apply` (áp dụng hành động lên bản sao, sau lượt MIN thì gọi `_move_bullets` và tăng chu kỳ) |
+| Trạng thái kết thúc | `GameState.is_terminal` (cùng `_destroyed`; hoặc hết giới hạn chu kỳ thì hòa) |
+| Hàm lợi ích | `GameState.utility` (thắng sớm có điểm cao hơn, hòa bằng 0) |
+
+- Áp dụng thuật toán tìm kiếm lên mô hình này nằm ở `tank_ai.py` (xem YC2).
+- **Trong báo cáo:** phần thảo luận cách áp dụng Minimax, Alpha-Beta và Heuristic Minimax; nêu các giả định (MAX đi trước rồi MIN, mỗi xe tối đa một đạn đang bay, đi vào ô bị chặn thì chỉ quay hướng).
+
+#### ex2 – YC2 (1.5 điểm): thuật toán điều khiển và thí nghiệm bốn cấu hình
+
+**Đề yêu cầu:**
+1. Cài đặt thuật toán điều khiển xe tăng; có thể dùng các kỹ thuật tối ưu để xe tăng hoạt động hiệu quả và game chạy theo thời gian thực.
+2. Thiết lập thí nghiệm so sánh thời gian tính toán và hiệu năng tìm kiếm của bốn cấu hình: Minimax Search, Alpha-Beta Search, Heuristic Minimax Search, Heuristic Minimax kèm Alpha-Beta Pruning.
+3. Dùng cùng kịch bản game và điều kiện tìm kiếm để so sánh công bằng.
+4. Các độ đo gợi ý: thời gian thực thi, số trạng thái được khám phá, độ sâu tìm kiếm và các độ đo phù hợp khác.
+
+**Trong dự án:**
+- Bốn cấu hình: `SearchAgent.CONFIGS` trong `tank_ai.py`, chạy trên cùng lớp `Searcher` (bật hoặc tắt `use_alpha_beta` và `use_heuristic`).
+- Hàm đánh giá của Heuristic Minimax: `HeuristicEvaluator` (`evaluate`, `_aim`, `first_hit`).
+- Kỹ thuật tối ưu: `Searcher.ordered_actions` (sắp xếp nước đi, cùng thứ tự cho cả bốn cấu hình), iterative deepening với giới hạn thời gian trong `Searcher.search`, và `legal_actions` bỏ các nước vô tác dụng.
+- Cùng kịch bản và điều kiện: `make_scenarios` (trạng thái đầu và các trạng thái giữa trận cố định bằng seed) trong `tank_experiements.py`.
+- Các độ đo: số node, số lá, số lần cắt tỉa, độ sâu hoàn tất, thời gian (lưu trong thống kê của `Searcher`).
+- Ba thí nghiệm:
+  - `experiment_cost`: số node, thời gian, số lần cắt tỉa theo độ sâu; đồng thời kiểm tra Alpha-Beta cho cùng giá trị và hành động với Minimax. Đầu ra `results_cost.csv`.
+  - `experiment_depth_budget`: độ sâu đạt được trong một ngân sách thời gian cố định. Đầu ra `results_depth_budget.csv`.
+  - `experiment_matches` (cùng `play_match` và `openings`): các cấu hình đấu vòng tròn từ nhiều khai cuộc. Đầu ra `results_matches.csv`.
+- **Lưu ý:** tên file hiện là `tank_experiements.py`; số liệu cần chạy lại trên máy đánh giá (Intel Core i5).
+
+#### ex2 – YC3 (0.5 điểm): giao diện PyGame và nạp thuật toán nhóm khác
+
+**Đề yêu cầu:**
+1. Cài đặt giao diện đồ họa bằng thư viện PyGame để vận hành trò chơi.
+2. Có cơ chế nhập và tích hợp thuật toán của các nhóm sinh viên khác.
+3. Cho phép các cách cài đặt thuật toán khác nhau thi đấu với nhau trong cùng môi trường game.
+
+**Trong dự án:**
+- Cơ chế nạp thuật toán nhóm khác: `agent_loader.py` (`load_agent_from_file`, `discover_agent_files`, `builtin_specs`, `file_spec`, `all_specs`) và hợp đồng giao tiếp trong `agents/README.md` (bốn kiểu plugin: `AGENT`, `create_agent()`, class có `choose_action`, hàm `choose_action(state)`). Ví dụ plugin: `agents/greedy_agent.py`, `agents/function_agent.py`.
+- Cho các thuật toán thi đấu trong cùng môi trường: `arena.py` (`GameController` chạy agent trong luồng riêng, quá giờ, lỗi hoặc sai kiểu đều thành `STAY`; `run_match`, `random_openings`, `head_to_head`). Chạy đấu không giao diện bằng `python arena.py <agent_a> <agent_b> --games 3`.
+- Giao diện PyGame: `tank_gui.py` (menu chọn người chơi cho từng bên gồm người, Random, bốn cấu hình, plugin; nạp plugin bằng phím L hoặc kéo thả file; hiển thị bản đồ, HP, đạn, thời gian suy nghĩ).
+- **Lưu ý quan trọng:** trong cấu trúc hiện tại của repo, `ex2/tank_gui.py` đang rỗng. Do đó phần "giao diện PyGame" của YC3 chưa có code trong repo; cần đặt nội dung `tank_gui.py` vào `source/ex2/` rồi kiểm tra với PyGame thật. Cơ chế nạp và đấu thì đã có sẵn ở `agent_loader.py` và `arena.py`.
+
+**Lưu ý chung của Task 2 (Notice):** theo nguyên tắc OOP; số liệu đánh giá trên macOS 13.7.8, Intel Core i5.
+
+### ex3 – Kakuro (Constraint Satisfaction Problems)
+
+**Mô tả đề:** hiểu luật Kakuro; mô hình bài toán thành CSP bằng cách xác định biến, miền giá trị và ràng buộc; xây dựng solver kết hợp kỹ thuật lan truyền ràng buộc (constraint propagation) với Backtracking Search; dùng các heuristic đã học ở Lecture 08 để tăng hiệu quả tìm kiếm.
+
+#### ex3 – YC1 (1.0 điểm): mô hình CSP
+
+**Đề yêu cầu:**
+1. Mô hình hóa đúng bài toán thành CSP, xác định và giải thích các thành phần: biến, miền giá trị, ràng buộc.
+2. Mô tả và biện minh các thuật toán và kỹ thuật dùng trong dự án.
+
+**Trong dự án:**
+
+| Thành phần theo đề | Nằm ở đâu |
+|---|---|
+| Biến | Mỗi ô trắng là một biến: `KakuroCSP.variables` (từ `KakuroPuzzle.white`) |
+| Miền giá trị | Chữ số 1 đến 9, thu hẹp ban đầu bằng các tổ hợp hợp lệ của từng dãy: `KakuroCSP.domains`, `Run.combos`, `Run.allowed_digits` |
+| Ràng buộc | Mỗi dãy (`Run`, trích bởi `KakuroPuzzle._extract_runs`) vừa phải đôi một khác nhau vừa có tổng đúng gợi ý; `Run.consistent` kiểm tra cục bộ; quan hệ láng giềng `KakuroCSP.neighbors`, `runs_of` |
+| Kiểm tra nghiệm và thống kê mô hình | `KakuroCSP.is_solution`, `KakuroCSP.statistics`, `KakuroCSP.consistent` |
+| Đọc bảng | `KakuroPuzzle.from_text` (định dạng `.` ô trắng, `#` ô đen, `down\across` gợi ý) |
+
+- Các kỹ thuật cần mô tả và biện minh nằm ở `kakuro_solver.py`: thu hẹp miền bằng tổ hợp, lan truyền all-different và lọc tổ hợp (`KakuroSolver._propagate`, `_revise`), Backtracking với MRV, Degree, LCV (`_select`, `_order_values`), restart ngẫu nhiên (`solve_with_restarts`).
+- **Trong báo cáo:** phần giải thích mô hình và phần biện minh lý do chọn từng kỹ thuật (dựa trên số liệu ở YC2).
+
+#### ex3 – YC2 (1.0 điểm): solver và đánh giá trên bảng phức tạp
+
+**Đề yêu cầu:**
+1. Cài đặt solver tìm được nghiệm hợp lệ cho bài toán.
+2. Chứng minh và đánh giá tính đúng đắn (correctness), tính ổn định (stability) và hiệu quả (effectiveness) bằng cách áp dụng lên bảng test phức tạp hơn do đề cung cấp.
+
+**Trong dự án:**
+- Solver kết hợp lan truyền ràng buộc và Backtracking: `KakuroSolver` (`solve`, `count_solutions`, `solve_with_restarts`, `SolverStats`); các kỹ thuật bật tắt được (`propagation`, `mrv`, `degree`, `lcv`).
+- Bảng phức tạp của đề: `puzzles/complex_9x9.txt` (bảng 9×9 chép lại từ ảnh trong đề).
+- Ba tiêu chí đề yêu cầu, trong `kakuro_experiments.py`:
+
+| Tiêu chí | Thí nghiệm | Nội dung | Đầu ra |
+|---|---|---|---|
+| Tính đúng đắn | A: `experiment_correctness`, `verify_independent` | Kiểm tra nghiệm trực tiếp từ văn bản bảng, đếm nghiệm (duy nhất hay không), so sánh nghiệm giữa các cấu hình | in ra màn hình |
+| Hiệu quả | B: `experiment_ablation` | So sánh từng kỹ thuật (số node, backtrack, lần lan truyền, thời gian) | `results_ablation.csv` |
+| Tính ổn định | C: `experiment_stability` | Chạy nhiều lần với seed khác nhau (ngẫu nhiên hóa thứ tự hòa và thứ tự giá trị) | `results_stability.csv` |
+| Mở rộng (bổ sung) | D: `experiment_scaling` | Bảng sinh ngẫu nhiên kích thước tăng dần, có và không có restart | `results_scaling.csv` |
+
+- Dữ liệu hỗ trợ: `generate_puzzle.py` (`generate`, `random_pattern`) sinh bảng có nghiệm biết trước; `puzzles/demo_6x5.txt`, `puzzles/demo_backtracking.txt`.
+- **Trong báo cáo:** bảng và nhận xét từ ba thí nghiệm A, B, C. Nên nói rõ giới hạn đã thấy ở D (bảng sinh ngẫu nhiên khó hơn bảng thiết kế).
+
+#### ex3 – YC3 (1.0 điểm): giao diện trực quan hóa
+
+**Đề yêu cầu:** cài đặt giao diện (UI) cho trò chơi thể hiện rõ ba nội dung: miền giá trị của các biến, quá trình lan truyền ràng buộc, và quá trình Backtracking Search.
+
+**Trong dự án:**
+
+| Nội dung đề yêu cầu | Nằm ở đâu |
+|---|---|
+| Miền giá trị của biến | `TraceStep.domains` (ảnh chụp miền ở mỗi bước, do `kakuro_trace.py: TraceRecorder` ghi); `kakuro_gui.py` vẽ các chữ số ứng viên trong lưới 3×3 nhỏ của mỗi ô, hoặc một chữ số lớn khi miền chỉ còn một giá trị |
+| Quá trình lan truyền ràng buộc | Các bước `revise` và `conflict` (sự kiện từ `KakuroSolver._propagate`); giao diện viền vàng dãy đang xử lý, viền cam các ô vừa bị thu hẹp miền, tô đỏ khi xung đột |
+| Quá trình Backtracking Search | Các bước `assign` và `backtrack` (chữ số xanh dương là quyết định tìm kiếm), độ sâu, bộ đếm số lần gán, quay lui, xung đột trong bảng thông tin |
+| Điều khiển xem quá trình | `KakuroApp.handle`, `update`, `draw`: phát tự động, đi từng bước tới hoặc lui, đổi tốc độ, nhảy tới xung đột hoặc quay lui kế tiếp, đổi ba cấu hình (`PRESETS` trong `kakuro_trace.py`), nạp bảng khác |
+
+- Bảng nên dùng khi trình diễn: `puzzles/complex_9x9.txt` (thấy rõ lan truyền) và `puzzles/demo_backtracking.txt` (có xung đột và quay lui).
+- **Lưu ý:** cần chạy `kakuro_gui.py` với PyGame thật để chụp ảnh và quay video cho báo cáo và `demo.txt`.
+
+**Lưu ý chung của Task 3 (Notice):** theo nguyên tắc OOP; số liệu đánh giá trên macOS 13.7.8, Intel Core i5.
+
+### Lưu ý khi nộp (liên quan đến ex1–ex3)
+
+- Đề yêu cầu trong thư mục `source` mỗi task nằm trong một thư mục con, có `README.md` và `requirement.txt` để cài đặt môi trường. Cấu trúc ở đầu tài liệu chưa liệt kê `requirement.txt`. Gợi ý nội dung: ex1 cần `python-sat` (và `matplotlib` nếu vẽ biểu đồ), ex2 và ex3 cần `pygame`.
+- Đề cũng nêu rằng với file `ipynb` phải giữ nguyên output của mọi ô; nếu có dùng notebook thì cần chạy và lưu output trước khi nộp.
+- Các phần "thảo luận" và "giải thích" của YC1 ở cả ba task, cùng phần tự đánh giá và đóng góp, thuộc Task 4 (báo cáo IEEE, tối đa 5 trang) và phải giải thích được khi phỏng vấn.
+
 ## `ex1`: N-Queens
 
 Bài toán đặt `N` quân hậu lên bàn cờ `N x N` sao cho không quân nào ăn được quân nào. Có hai hướng giải trong thư mục: chuyển ràng buộc thành công thức logic CNF rồi dùng SAT solver, hoặc dùng tìm kiếm cục bộ Min-Conflicts.
 
 ### [source/ex1/nqueens_cnf.py](source/ex1/nqueens_cnf.py)
+
+> **Thuộc yêu cầu:** ex1 – YC1 (mô hình logic mệnh đề, khám phá ràng buộc, chuyển CNF). Cũng là nền cho ex1 – YC2.
 
 Xây dựng mô hình logic CNF cho N-Queens.
 
@@ -54,6 +253,8 @@ Xây dựng mô hình logic CNF cho N-Queens.
 
 ### [source/ex1/nqueens_sat.py](source/ex1/nqueens_sat.py)
 
+> **Thuộc yêu cầu:** ex1 – YC2 (Glucose3, thí nghiệm khi N tăng, báo số mệnh đề và thời gian).
+
 Giải N-Queens bằng SAT solver Glucose3 từ thư viện PySAT.
 
 - `SATQueensSolver` tạo CNF, gọi Glucose3, đo riêng thời gian sinh CNF và thời gian giải, rồi chuyển mô hình trả về thành vị trí các quân hậu.
@@ -65,6 +266,8 @@ Phụ thuộc chính: `python-sat`; `matplotlib` chỉ cần cho phần vẽ bi�
 
 ### [source/ex1/nqueens_minconflicts.py](source/ex1/nqueens_minconflicts.py)
 
+> **Thuộc yêu cầu:** ex1 – YC3 (Min-Conflicts, heuristic chọn biến, so sánh với bản chuẩn).
+
 Giải N-Queens bằng thuật toán tìm kiếm cục bộ Min-Conflicts, không cần SAT solver.
 
 - Trạng thái lưu một hậu cho mỗi cột; `rows[c]` là hàng của hậu ở cột `c`. Nhờ vậy ràng buộc mỗi cột có đúng một hậu luôn được thỏa mãn.
@@ -75,6 +278,8 @@ Giải N-Queens bằng thuật toán tìm kiếm cục bộ Min-Conflicts, khôn
 - Khi chạy trực tiếp, chương trình in thử cho `N=8` và chạy thí nghiệm cho các kích thước từ 8 đến 256.
 
 ### [results_minconflicts.csv](source/ex1/results_minconflicts.csv)
+
+> **Thuộc yêu cầu:** ex1 – YC3 (kết quả so sánh heuristic với Min-Conflicts chuẩn).
 
 Kết quả thí nghiệm Min-Conflicts đã được lưu sẵn. Mỗi dòng là một cặp kích thước `N` và thuật toán chọn biến, với các cột:
 
@@ -90,6 +295,8 @@ Bài tập mô hình hóa Tank Battle thành game hai người chơi đối khá
 
 ### [tank_game.py](source/ex2/tank_game.py)
 
+> **Thuộc yêu cầu:** ex2 – YC1 (trạng thái, người chơi, hành động, chuyển trạng thái, terminal, utility).
+
 Chứa luật chơi và trạng thái game; đây là nền tảng mà agent tìm kiếm dùng.
 
 - Các kiểu `Tank`, `Base`, `Bullet`, `Direction` và `Action` biểu diễn đơn vị, hướng và hành động.
@@ -99,6 +306,8 @@ Chứa luật chơi và trạng thái game; đây là nền tảng mà agent tì
 - Chạy trực tiếp file sẽ in bàn cờ ban đầu cùng các hành động hợp lệ của MAX.
 
 ### [tank_ai.py](source/ex2/tank_ai.py)
+
+> **Thuộc yêu cầu:** ex2 – YC2 (thuật toán điều khiển xe tăng, bốn cấu hình tìm kiếm, kỹ thuật tối ưu).
 
 Triển khai các agent chọn hành động dựa trên tìm kiếm đối kháng.
 
@@ -112,6 +321,8 @@ Module này import luật chơi từ `tank_game.py`.
 
 ### [tank_experiements.py](source/ex2/tank_experiements.py)
 
+> **Thuộc yêu cầu:** ex2 – YC2 (thí nghiệm so sánh bốn cấu hình trên cùng kịch bản).
+
 Tạo tình huống chơi và đánh giá bốn cấu hình tìm kiếm trong ba loại thí nghiệm.
 
 - `make_scenarios` tạo trạng thái ban đầu và các trạng thái giữa trận có thể tái lập bằng seed.
@@ -123,6 +334,8 @@ Tạo tình huống chơi và đánh giá bốn cấu hình tìm kiếm trong ba
 Lưu ý: tên file hiện có là `tank_experiements.py` (thừa chữ `e` so với `experiments`); khi chạy, dùng đúng tên file này.
 
 ### `arena.py`, `agent_loader.py` và `agents/`
+
+> **Thuộc yêu cầu:** ex2 – YC3 (cơ chế nạp thuật toán nhóm khác và cho các thuật toán thi đấu). Phần giao diện PyGame của YC3 nằm ở `tank_gui.py`, hiện đang rỗng.
 
 Các file này bổ sung cách chơi game với agent có sẵn hoặc agent plugin:
 
@@ -138,6 +351,8 @@ Chạy đấu agent từ thư mục `source/ex2`, ví dụ: `python arena.py ran
 Kakuro được biểu diễn thành bài toán thỏa mãn ràng buộc (CSP): mỗi ô trắng là một biến có miền chữ số 1-9; mỗi dãy ngang/dọc phải có tổng đúng với gợi ý và không lặp chữ số.
 
 ### Các module chính
+
+> **Thuộc yêu cầu:** `kakuro_csp.py` thuộc ex3 – YC1; `kakuro_solver.py` thuộc ex3 – YC1 (kỹ thuật) và YC2 (solver); `kakuro_experiments.py` và `puzzles/complex_9x9.txt` thuộc ex3 – YC2; `kakuro_trace.py` và `kakuro_gui.py` thuộc ex3 – YC3.
 
 - `kakuro_csp.py` đọc lưới từ văn bản, tìm các dãy ràng buộc (`Run`), tạo miền giá trị và quan hệ láng giềng. `KakuroCSP.is_solution` kiểm tra nghiệm; `statistics` thống kê kích thước mô hình.
 - `kakuro_solver.py` giải CSP bằng lan truyền ràng buộc và quay lui. Có thể bật/tắt lọc miền, MRV, Degree, LCV; hỗ trợ giới hạn node, khởi động lại ngẫu nhiên và đếm nghiệm. `SolverStats` lưu node, backtrack, revise và thời gian.
